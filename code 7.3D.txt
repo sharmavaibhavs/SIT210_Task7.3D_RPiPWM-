@@ -1,0 +1,65 @@
+import RPi.GPIO as GPIO
+import time
+GPIO.setmode(GPIO.BCM)
+
+GPIO.setwarnings(False)
+
+TRIG = 18
+ECHO = 24
+LED = 14
+
+print(" Distance Measurement in progress")
+
+GPIO.setup(TRIG,GPIO.OUT)
+GPIO.setup(ECHO,GPIO.IN)
+GPIO.setup(led,GPIO.OUT)
+
+GPIO.setup(LED,GPIO.OUT)
+pwmLED = GPIO.PWM(LED1,200)
+pwmLED.start(40)
+
+try:
+while True:
+    GPIO.output(TRIG, False)
+    time.sleep(0.50)
+
+    GPIO.output(TRIG, True)
+    time.sleep(0.01)
+    GPIO.output(TRIG, False)
+
+    while GPIO.input(ECHO)==0:
+        pulse_start=time.time()
+
+    while GPIO.input(ECHO)==1:
+        pulse_end=time.time()
+
+    pulse_duration=pulse_end-pulse_start
+
+    distance = pulse_duration*11150
+    distance = round(distance, 2)
+    
+        if(distance >0 and distance <= 20):
+            
+            print("TOO CLOSE")
+            pwmLED.ChangeDutyCycle(00) 
+            
+        elif(distance > 15 and distance <= 35):
+            print("CLOSE")
+            pwmLED.ChangeDutyCycle(25) 
+        
+        elif(distance >35 and distance <= 45):
+            print("PERFECT DISTANCE NOR CLOSE NOR FAR")
+            pwmLED.ChangeDutyCycle(50) 
+
+        elif(distance > 45 and distance <= 50):
+            print ("AWAY")
+            pwmLED.ChangeDutyCycle(75) 
+        
+        elif(distance > 50):
+            print("TOO AWAY")
+            pwmLED.ChangeDutyCycle(100) 
+
+except KeyboardInterrupt:
+    print("Cleaning up!")
+    gpio.cleanup()
+    exit
